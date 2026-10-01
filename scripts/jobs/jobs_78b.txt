@@ -1,0 +1,33 @@
+# jobs_78b.txt — 7.8B 추가 실험 (GPU 2,3 전담)
+# 순서: 시드 확대(최우선) → AWQ(기법 일반성) → n=512(크기 곡선 보간)
+# 오래 걸리는 AWQ를 중간에 두어 종료 시점을 맞춘다.
+sweep:gptq:ko:11:256
+sweep:gptq:en_instruct:11:256
+sweep:gptq:ko:12:256
+sweep:gptq:en_instruct:12:256
+sweep:gptq:ko:13:256
+sweep:gptq:en_instruct:13:256
+sweep:gptq:ko:14:256
+sweep:gptq:en_instruct:14:256
+sweep:gptq:ko:15:256
+sweep:gptq:en_instruct:15:256
+sweep:awq:ko:3:256
+sweep:awq:en_instruct:3:256
+sweep:awq:ko:4:256
+sweep:awq:en_instruct:4:256
+sweep:awq:ko:5:256
+sweep:awq:en_instruct:5:256
+sweep:gptq:ko:16:256
+sweep:gptq:en_instruct:16:256
+sweep:gptq:ko:17:256
+sweep:gptq:en_instruct:17:256
+sweep:gptq:ko:1:512
+sweep:gptq:en_instruct:1:512
+sweep:gptq:ko:2:512
+sweep:gptq:en_instruct:2:512
+sweep:gptq:ko:3:512
+sweep:gptq:en_instruct:3:512
+sweep:gptq:ko:4:512
+sweep:gptq:en_instruct:4:512
+sweep:gptq:ko:5:512
+sweep:gptq:en_instruct:5:512

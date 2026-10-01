@@ -1,0 +1,39 @@
+# e2_jobs.txt — 캘리브레이션 크기 실험 (RQ2), GPTQ 총 24건
+#
+# 형식: sweep:METHOD:CALIB:SEED:N
+# 평가는 KMMLU·MMLU만, --log_samples 기록. 동률 분할 채점으로 분석한다.
+#
+# 시드 설계
+#   n=128, 1024 : seed 1~5 (모두 무작위 추출)
+#   n=256       : 기존 seed 0~2 + 신규 seed 3·4
+#   seed 0은 데이터셋 앞 N행의 결정적 추출이므로 분석에서는 무작위 시드(1 이상)를
+#   주 결과로 쓰고, seed 0은 "결정적 추출" 사례로 따로 보고한다.
+#
+# 오래 걸리는 작업(n=1024)을 앞에 두어 동적 큐에서 GPU 간 종료 시점을 맞춘다.
+
+sweep:gptq:ko:1:1024
+sweep:gptq:en_instruct:1:1024
+sweep:gptq:ko:2:1024
+sweep:gptq:en_instruct:2:1024
+sweep:gptq:ko:3:1024
+sweep:gptq:en_instruct:3:1024
+sweep:gptq:ko:4:1024
+sweep:gptq:en_instruct:4:1024
+sweep:gptq:ko:5:1024
+sweep:gptq:en_instruct:5:1024
+
+sweep:gptq:ko:3:256
+sweep:gptq:en_instruct:3:256
+sweep:gptq:ko:4:256
+sweep:gptq:en_instruct:4:256
+
+sweep:gptq:ko:1:128
+sweep:gptq:en_instruct:1:128
+sweep:gptq:ko:2:128
+sweep:gptq:en_instruct:2:128
+sweep:gptq:ko:3:128
+sweep:gptq:en_instruct:3:128
+sweep:gptq:ko:4:128
+sweep:gptq:en_instruct:4:128
+sweep:gptq:ko:5:128
+sweep:gptq:en_instruct:5:128

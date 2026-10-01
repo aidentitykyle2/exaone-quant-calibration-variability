@@ -1,0 +1,20 @@
+# 검증된 조합 (2026-09 기준)
+# - torch/vllm/llmcompressor/compressed-tensors/transformers 사이의 의존성
+#   충돌 없음을 리졸버로 확인함
+# - llmcompressor==0.10.0.3 안에 AWQModifier / GPTQModifier /
+#   QuantizationModifier / SpinQuantModifier가 모두 존재하고,
+#   "W4A16" 프리셋 스킴을 지원함을 패키지 내부 코드로 직접 확인함
+# - torch의 cu126(CUDA 12.6) 빌드 존재 여부와 vllm의 CUDA 확장이
+#   실제 H100 드라이버(560.35.05) 위에서 로드되는지는 GPU가 있는
+#   서버에서만 확인 가능 — 이 부분은 설치 후 반드시 재검증할 것
+
+torch==2.10.0
+torchvision==0.25.0
+torchaudio==2.10.0
+vllm==0.19.0
+llmcompressor==0.10.0.3
+compressed-tensors==0.14.0.1
+transformers==4.57.6
+datasets
+numpy
+lm-eval

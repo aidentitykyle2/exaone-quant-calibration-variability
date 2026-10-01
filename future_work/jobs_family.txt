@@ -1,0 +1,62 @@
+# jobs_family.txt — 다른 모델 계열 확장 (향후 연구용)
+#
+# 본 논문의 한계 "모델 계열이 하나"를 메우기 위한 작업 목록이다.
+# 조건은 7.8B 시드 실험과 동일하게 맞춘다: GPTQ, W4A16, group 128, n=256,
+# 18시드 x {ko, en_instruct}, 평가는 KMMLU/MMLU.
+#
+# BF16 기준선을 먼저 두는 이유: 저하율 D(c,B)의 분모이므로 이것이 없으면
+# 다른 결과를 해석할 수 없다. 큐는 위에서부터 선점되므로 먼저 실행된다.
+#
+# 실행:
+#   MID=Qwen/Qwen2.5-7B-Instruct bash preflight_family.sh full   # 반드시 먼저
+#   MODEL_ID=Qwen/Qwen2.5-7B-Instruct REVISION= \
+#     BASE=quant_experiments/Qwen2.5-7B-Instruct \
+#     nohup bash queue_worker.sh 0 jobs_family.txt > logs_family/gpu0.txt 2>&1 & disown
+#   (run_family.sh 를 쓰면 4장에 한 번에 띄운다)
+#
+# 소요: 4 GPU 기준 약 20시간 (7.8B 시드 실험과 동일 규모).
+
+bf16:ko
+bf16:en
+
+sweep:gptq:ko:1:256
+sweep:gptq:en_instruct:1:256
+sweep:gptq:ko:2:256
+sweep:gptq:en_instruct:2:256
+sweep:gptq:ko:3:256
+sweep:gptq:en_instruct:3:256
+sweep:gptq:ko:4:256
+sweep:gptq:en_instruct:4:256
+sweep:gptq:ko:5:256
+sweep:gptq:en_instruct:5:256
+sweep:gptq:ko:6:256
+sweep:gptq:en_instruct:6:256
+sweep:gptq:ko:7:256
+sweep:gptq:en_instruct:7:256
+sweep:gptq:ko:8:256
+sweep:gptq:en_instruct:8:256
+sweep:gptq:ko:9:256
+sweep:gptq:en_instruct:9:256
+sweep:gptq:ko:10:256
+sweep:gptq:en_instruct:10:256
+sweep:gptq:ko:11:256
+sweep:gptq:en_instruct:11:256
+sweep:gptq:ko:12:256
+sweep:gptq:en_instruct:12:256
+sweep:gptq:ko:13:256
+sweep:gptq:en_instruct:13:256
+sweep:gptq:ko:14:256
+sweep:gptq:en_instruct:14:256
+sweep:gptq:ko:15:256
+sweep:gptq:en_instruct:15:256
+sweep:gptq:ko:16:256
+sweep:gptq:en_instruct:16:256
+sweep:gptq:ko:17:256
+sweep:gptq:en_instruct:17:256
+sweep:gptq:ko:18:256
+sweep:gptq:en_instruct:18:256
+
+# --- 선택: seed 0(데이터셋 앞부분 결정적 추출) 조건. 본 논문에서 '단일 실행'의
+#     기준으로 쓴 조건과 같은 위치를 확보해, 계열 간에 단일 실행 위험을 비교한다.
+# sweep:gptq:ko:0:256
+# sweep:gptq:en_instruct:0:256

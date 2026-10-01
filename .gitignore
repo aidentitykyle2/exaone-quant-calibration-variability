@@ -1,0 +1,28 @@
+# 산출물 — 고정 리비전과 표본 목록으로 재생성된다 (수십~수백 GB)
+quant_experiments/
+*.safetensors
+*.bin
+*.pt
+
+# lm-eval 원본 기록 — 수 GB. data/per_item_scores/ 로 요약해 올린다
+seed_eval/
+samples_*.jsonl
+logs*/
+log*.txt
+run*.txt
+nohup.out
+
+# 큐 선점 기록
+queue_claims/
+
+# 가상환경·캐시
+venv*/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.cache/
+*.bak
+
+# 작업 중 파일
+*.tmp
+.DS_Store

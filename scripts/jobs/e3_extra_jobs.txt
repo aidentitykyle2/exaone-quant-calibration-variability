@@ -1,0 +1,19 @@
+# e3_extra_jobs.txt — E3(합의 캘리브레이션)를 위한 n=256 시드 추가 (선택)
+#
+# E2만으로는 n=256 무작위 시드가 조건당 4개(s1~s4)라, C2에서 K개씩 고르는 조합이
+# 같은 시드를 반복 선택해 분산이 의미를 잃는다(모의 검증에서 확인).
+# seed 5~10을 추가하면 무작위 시드가 조건당 10개가 되어 K=3 조합이 120가지로 늘어난다.
+# 이 시드들은 E1의 n=256 위양성률 추정(귀무 짝 45개)에도 함께 쓰인다.
+
+sweep:gptq:ko:5:256
+sweep:gptq:en_instruct:5:256
+sweep:gptq:ko:6:256
+sweep:gptq:en_instruct:6:256
+sweep:gptq:ko:7:256
+sweep:gptq:en_instruct:7:256
+sweep:gptq:ko:8:256
+sweep:gptq:en_instruct:8:256
+sweep:gptq:ko:9:256
+sweep:gptq:en_instruct:9:256
+sweep:gptq:ko:10:256
+sweep:gptq:en_instruct:10:256

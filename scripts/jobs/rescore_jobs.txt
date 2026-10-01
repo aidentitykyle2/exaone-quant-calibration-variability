@@ -1,0 +1,25 @@
+# rescore_jobs.txt — 동률 분할 재채점을 위한 재평가 작업 목록
+#
+# 형식: evalone:체크포인트_디렉터리명:출력이름:언어
+# 출력은 seed_eval/<언어>/<출력이름>/ 에 --log_samples로 저장된다.
+#
+# 이 7개 체크포인트는 --log_samples 없이 평가되어 선택지별 로그우도가 남아 있지 않다.
+# 동률 분할 채점을 하려면 재평가가 필요하다(재양자화는 불필요).
+#
+# 한국어(약 60분)를 먼저, 영어(약 45분)를 나중에 배치해 GPU 간 종료 시점을 맞춘다.
+
+evalone:gptq_4bit_calib_en:gptq_en_s0:ko
+evalone:awq_4bit_calib_en:awq_en_s0:ko
+evalone:gptq_4bit_calib_mixed:gptq_mixed_s0:ko
+evalone:awq_4bit_calib_mixed:awq_mixed_s0:ko
+evalone:quarot_4bit:quarot_ko_s0:ko
+evalone:quarot_4bit_calib_en:quarot_en_s0:ko
+evalone:quarot_4bit_rtn_backup:quarot_rtn:ko
+
+evalone:gptq_4bit_calib_en:gptq_en_s0:en
+evalone:awq_4bit_calib_en:awq_en_s0:en
+evalone:gptq_4bit_calib_mixed:gptq_mixed_s0:en
+evalone:awq_4bit_calib_mixed:awq_mixed_s0:en
+evalone:quarot_4bit:quarot_ko_s0:en
+evalone:quarot_4bit_calib_en:quarot_en_s0:en
+evalone:quarot_4bit_rtn_backup:quarot_rtn:en

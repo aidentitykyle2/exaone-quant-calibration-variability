@@ -1,0 +1,145 @@
+--- run_quant_stage.py
++++ run_quant_stage.py
+@@ -106,15 +106,20 @@
+     "haerae",  # 태스크명 확인 필요
+ ])
+ 
+-STAGES = ["bf16", "awq", "gptq", "quarot", "spinquant"]
++STAGES = ["bf16", "awq", "gptq", "quarot", "spinquant", "gptq_robust"]
+ METHOD_NAMES = {
+     "bf16": "BF16",
+     "awq": "AWQ-4bit",
+     "gptq": "GPTQ-4bit",
+     "quarot": "QuaRot-4bit",
+     "spinquant": "SpinQuant-4bit",
++    "gptq_robust": "GPTQ-4bit-robust",
+ }
+ 
++# 강건 Hessian 집계(향후 연구용). 본 논문 결과에는 사용되지 않았다.
++DEFAULT_ROBUST_K = 4
++DEFAULT_ROBUST_AGG = "geomedian"
++
+ 
+ def log(msg: str) -> None:
+     print(f"[{datetime.now().strftime('%H:%M:%S')}] {msg}", flush=True)
+@@ -550,7 +555,10 @@
+     return config.hidden_size // config.num_attention_heads
+ 
+ 
+-def build_recipe(method: str, model_id: str = None, revision: str = None):
++def build_recipe(method: str, model_id: str = None, revision: str = None,
++                  robust_k: int = DEFAULT_ROBUST_K,
++                  robust_agg: str = DEFAULT_ROBUST_AGG,
++                  calib_n: int = NUM_CALIB_SAMPLES):
+     """
+     method별 llmcompressor recipe를 구성한다.
+     - awq       : AWQModifier (Activation-aware, W4A16)
+@@ -585,6 +593,12 @@
+     if method == "gptq":
+         return [GPTQModifier(targets="Linear", scheme="W4A16", ignore=["lm_head"])]
+ 
++    if method == "gptq_robust":
++        # 향후 연구용. GPTQ의 Hessian 표본평균을 강건 추정량으로 바꾼 것 외에는
++        # 기준선(gptq)과 모든 조건이 같아야 한다.
++        from robust_gptq import build_robust_recipe
++        return build_robust_recipe(k=robust_k, aggregation=robust_agg, calib_n=calib_n)
++
+     if method in ("quarot", "spinquant"):
+         learnable = (method == "spinquant")
+         if learnable:
+@@ -681,7 +695,9 @@
+                                  calib_dataset, revision: str = None,
+                                  calib_lang: str = DEFAULT_CALIB_LANG,
+                                  calib_seed: int = 0,
+-                                 calib_n: int = NUM_CALIB_SAMPLES) -> str:
++                                 calib_n: int = NUM_CALIB_SAMPLES,
++                                 robust_k: int = DEFAULT_ROBUST_K,
++                                 robust_agg: str = DEFAULT_ROBUST_AGG) -> str:
+     from transformers import AutoModelForCausalLM, AutoTokenizer
+     from llmcompressor import oneshot
+ 
+@@ -690,7 +706,8 @@
+     tokenizer = AutoTokenizer.from_pretrained(
+         model_id, revision=revision, trust_remote_code=True
+     )
+-    recipe = build_recipe(method, model_id=model_id, revision=revision)
++    recipe = build_recipe(method, model_id=model_id, revision=revision,
++                           robust_k=robust_k, robust_agg=robust_agg, calib_n=calib_n)
+ 
+     model = None
+     try:
+@@ -716,6 +733,9 @@
+             suffix += f"_n{calib_n}"
+         if calib_seed:
+             suffix += f"_s{calib_seed}"
++        # 강건 집계는 K와 집계 방식이 곧 조건이므로 경로에 남긴다.
++        if method == "gptq_robust":
++            suffix += f"_k{robust_k}_{robust_agg}"
+         out_dir = output_dir / f"{method}_4bit{suffix}"
+         out_dir.mkdir(parents=True, exist_ok=True)
+         model.save_pretrained(str(out_dir), save_compressed=True)
+@@ -1002,7 +1022,9 @@
+ # ============================================================
+ def run_stage(stage: str, model_id: str, output_dir: Path, revision: str = None, calib_seed: int = 0,
+               calib_n: int = NUM_CALIB_SAMPLES,
+-               calib_lang: str = DEFAULT_CALIB_LANG) -> None:
++               calib_lang: str = DEFAULT_CALIB_LANG,
++               robust_k: int = DEFAULT_ROBUST_K,
++               robust_agg: str = DEFAULT_ROBUST_AGG) -> None:
+     results_file = output_dir / "results.json"
+     results = load_or_init_results(results_file)
+     env_info = get_environment_info(model_id)
+@@ -1026,6 +1048,11 @@
+         method_name = f"{method_name}[n:{calib_n}]"
+     if stage != "bf16" and calib_seed:
+         method_name = f"{method_name}[seed:{calib_seed}]"
++    if stage == "gptq_robust":
++        method_name = f"{method_name}[K:{robust_k},agg:{robust_agg}]"
++        env_info["robust_k"] = robust_k
++        env_info["robust_agg"] = robust_agg
++        results["environment"] = env_info
+ 
+     try:
+         if stage == "bf16":
+@@ -1039,7 +1066,7 @@
+             out_path = quantize_with_llmcompressor(
+                 model_id, output_dir, stage, calib_dataset,
+                 revision=revision, calib_lang=calib_lang, calib_seed=calib_seed,
+-                calib_n=calib_n
++                calib_n=calib_n, robust_k=robust_k, robust_agg=robust_agg
+             )
+             # 양자화 산출물은 로컬 디렉터리이므로 이 이후로는 revision이 필요 없다.
+             eff = measure_efficiency_vllm(out_path, method_name)
+@@ -1047,6 +1074,9 @@
+             eff["calib_lang"] = calib_lang
+             eff["calib_seed"] = calib_seed
+             eff["calib_manifest"] = str(manifest_path)
++            if stage == "gptq_robust":
++                eff["robust_k"] = robust_k
++                eff["robust_agg"] = robust_agg
+             eff["tokenizer_check"] = check_tokenizer_consistency(model_id, revision, out_path)
+ 
+         results["efficiency"] = [r for r in results["efficiency"] if r["method"] != method_name]
+@@ -1099,6 +1129,12 @@
+                               "언어별 ablation 시 사용한다. 기본값(ko) 외의 언어로 실행하면 "
+                               "산출물이 <method>_4bit_calib_<lang>/ 에 별도로 저장되어 "
+                               "기존 결과를 덮어쓰지 않는다.")
++    parser.add_argument("--robust-k", type=int, default=DEFAULT_ROBUST_K,
++                         help="--stage gptq_robust 전용. 캘리브레이션을 나눌 부분집합 수 K.")
++    parser.add_argument("--robust-agg", default=DEFAULT_ROBUST_AGG,
++                         choices=["mean", "median", "trimmed", "geomedian"],
++                         help="--stage gptq_robust 전용. Hessian 집계 방식. "
++                              "mean은 기존 GPTQ와 수학적으로 동일한 대조군이다.")
+     return parser.parse_args()
+ 
+ 
+@@ -1123,7 +1159,8 @@
+         sys.exit(1)
+ 
+     run_stage(args.stage, args.model, output_dir, revision=revision,
+-              calib_lang=args.calib_lang, calib_seed=args.calib_seed, calib_n=args.calib_n)
++              calib_lang=args.calib_lang, calib_seed=args.calib_seed, calib_n=args.calib_n,
++              robust_k=args.robust_k, robust_agg=args.robust_agg)
+ 
+ 
+ if __name__ == "__main__":

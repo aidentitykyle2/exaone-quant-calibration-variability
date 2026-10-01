@@ -1,0 +1,107 @@
+--- rescore_all.py
++++ rescore_all.py
+@@ -85,9 +85,40 @@
+ }
+ PAIRS = [("MMLU계열", "kmmlu", "mmlu"), ("HellaSwag", "kobest_hellaswag", "hellaswag"),
+          ("BoolQ", "kobest_boolq", "boolq")]
+-# 기존 lm-eval 보고치 (정합성 점검용, first 기준)
+-REPORTED = {("bf16", "kmmlu"): 0.4555, ("bf16", "haerae"): 0.7663, ("bf16", "mmlu"): 0.6585,
+-            ("bf16", "kobest_boolq"): 0.9053, ("bf16", "boolq"): 0.8648}
++# 정합성 점검용 참조값.
++# 이전 버전은 7.8B의 보고치를 하드코딩해 두어, 다른 모델(32B 등)을 점검하면
++# 항상 "불일치"가 떴다. 점검의 목적은 "그 실행에서 lm-eval이 스스로 적은 값"과
++# 우리가 재계산한 first 점수가 같은지 보는 것이므로, 각 평가 디렉터리의
++# results*.json에서 직접 읽는다. 이렇게 하면 모델이 바뀌어도 그대로 쓸 수 있다.
++REPORTED_FALLBACK = {   # 참고용. results json이 없을 때만 쓰고, 7.8B 전용임을 명시한다.
++    "EXAONE-3.5-7.8B-Instruct": {
++        "kmmlu": 0.4555, "haerae": 0.7663, "mmlu": 0.6585,
++        "kobest_boolq": 0.9053, "boolq": 0.8648,
++    },
++}
++
++
++def reported_from_results(model_dir: Path, task_names) -> dict:
++    """lm-eval이 그 실행에서 기록한 집계 정확도를 과제별로 읽는다."""
++    files = sorted(model_dir.rglob("results*.json"),
++                   key=lambda p: p.stat().st_mtime)
++    if not files:
++        return {}
++    try:
++        res = json.loads(files[-1].read_text(encoding="utf-8")).get("results", {})
++    except Exception:
++        return {}
++    out = {}
++    for n in task_names:
++        r = res.get(n) or {}
++        for k in ("acc_norm,none", "acc,none", "acc_norm", "acc"):
++            if k in r:
++                try:
++                    out[n] = float(r[k])
++                except (TypeError, ValueError):
++                    pass
++                break
++    return out
+ 
+ 
+ def match(task, how, val):
+@@ -152,7 +183,8 @@
+     out = base / "rescore"
+     out.mkdir(parents=True, exist_ok=True)
+ 
+-    data = {}   # (lang, model) -> 결과
++    data = {}       # (lang, model) -> 결과
++    reported = {}   # (lang, model) -> lm-eval이 그 실행에서 기록한 정확도
+     lines = []
+     for lang in ("ko", "en"):
+         root = base / "seed_eval" / lang
+@@ -162,6 +194,8 @@
+             res, mism = score_dir(d, lang)
+             if res:
+                 data[(lang, d.name)] = res
++                reported[(lang, d.name)] = reported_from_results(
++                    d, [n for n, _, _ in TASKS[lang]])
+                 bad = {k: v for k, v in mism.items() if "해석 실패" not in k}
+                 unresolved = {k: v for k, v in mism.items() if "해석 실패" in k}
+                 if bad:
+@@ -171,13 +205,34 @@
+ 
+     models = sorted({m for _, m in data}, key=lambda x: (x != "bf16", x))
+ 
+-    lines.append("=== 정합성 점검: first 기준이 기존 lm-eval 보고치와 일치하는가 ===")
+-    for (m, t), rep in REPORTED.items():
+-        lang = "ko" if t in dict((n, 1) for n, _, _ in TASKS["ko"]) else "en"
+-        got = data.get((lang, m), {}).get(t, {}).get("first")
+-        if got is not None:
+-            lines.append(f"  {m:6s} {t:14s} 보고치 {rep:.4f}  재계산 {got:.4f}  "
+-                         f"{'일치' if abs(got - rep) < 0.0006 else '불일치 — 확인 필요'}")
++    lines.append("=== 정합성 점검: first 기준이 그 실행의 lm-eval 보고치와 일치하는가 ===")
++    lines.append(f"    참조: {base.name} 의 각 seed_eval/*/<조건>/results*.json")
++    n_checked = 0
++    for (lang, m), rep_map in sorted(reported.items()):
++        for t, rep in sorted(rep_map.items()):
++            got = data.get((lang, m), {}).get(t, {}).get("first")
++            if got is None:
++                continue
++            n_checked += 1
++            ok = abs(got - rep) < 0.0006
++            if ok and m != "bf16":
++                continue        # 정상인 양자화 조건은 줄 수가 많아 생략한다
++            lines.append(f"  {m:24s} {t:14s} 보고치 {rep:.4f}  재계산 {got:.4f}  "
++                         f"{'일치' if ok else '불일치 — 확인 필요'}")
++    if n_checked == 0:
++        fb = REPORTED_FALLBACK.get(base.name)
++        if fb:
++            lines.append("    results json을 찾지 못해 내장 참조값으로 대조한다(7.8B 전용).")
++            for t, rep in fb.items():
++                lang = "ko" if t in dict((n, 1) for n, _, _ in TASKS["ko"]) else "en"
++                got = data.get((lang, "bf16"), {}).get(t, {}).get("first")
++                if got is not None:
++                    lines.append(f"  {'bf16':24s} {t:14s} 보고치 {rep:.4f}  재계산 {got:.4f}  "
++                                 f"{'일치' if abs(got - rep) < 0.0006 else '불일치 — 확인 필요'}")
++        else:
++            lines.append(f"    대조할 참조값이 없다({base.name}). 점검을 건너뛴다.")
++    else:
++        lines.append(f"    대조한 (조건, 과제) 쌍 {n_checked}개. 불일치만 위에 표시(bf16은 항상 표시).")
+     lines.append("")
+ 
+     rows = []

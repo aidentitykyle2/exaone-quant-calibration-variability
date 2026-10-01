@@ -1,0 +1,46 @@
+cff-version: 1.2.0
+message: "이 저장소를 사용하면 아래 논문을 인용해 주십시오."
+title: "4비트 LLM 양자화에서 측정된 언어 비대칭 효과의 신뢰성: 캘리브레이션 표본 변동에 대한 분석"
+abstract: >-
+  사후 학습 4비트 양자화에서 캘리브레이션 데이터의 언어가 언어별 성능에
+  미치는 영향은 대개 단일 실행으로 보고된다. 캘리브레이션 표본만 바꾼 반복
+  실험과 캘리브레이션 언어 라벨 재배정 순열 검정을 통해, 두 평가 언어의
+  대비를 함께 취한 지표는 캘리브레이션 언어에 귀속되나 한쪽 언어의 단순
+  효과는 귀속되지 않음을 두 규모와 두 기법에서 보인다.
+type: software
+authors:
+  - given-names: "JoonOh"
+    family-names: "Park"
+    alias: "박준오"
+    email: "aidentitykyle@gmail.com"
+    affiliation: "한국기술교육대학교 대학원 AI융합교육학과"
+    # orcid: "https://orcid.org/0000-0000-0000-0000"
+  - given-names: "Yuil"
+    family-names: "Jung"
+    alias: "정유일"
+    email: "교신저자이메일@주소"
+    affiliation: "남부직업개발원"
+keywords:
+  - LLM quantization
+  - calibration data
+  - sampling variability
+  - language asymmetry
+  - permutation test
+  - evaluation methodology
+date-released: "2026-10-01"
+license: MIT
+repository-code: "https://github.com/aidentitykyle2/exaone-quant-calibration-variability"
+preferred-citation:
+  type: conference-paper
+  title: "4비트 LLM 양자화의 언어 비대칭 효과와 신뢰성"
+  authors:
+    - given-names: "JoonOh"
+      family-names: "Park"
+      affiliation: "한국기술교육대학교 대학원 AI융합교육학과"
+    - given-names: "Yuil"
+      family-names: "Jung"
+      affiliation: "남부직업개발원"
+  collection-title: "2026 한국정보기술학회 추계 종합학술대회 논문집"
+  conference:
+    name: "2026 한국정보기술학회 추계 종합학술대회"
+  year: 2026

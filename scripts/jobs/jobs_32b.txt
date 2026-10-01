@@ -1,0 +1,12 @@
+# jobs_32b.txt — EXAONE 3.5-32B 규모 일반화 (GPU 0,1 전담)
+# 7.8B와 같은 세대(3.5)라 규모만 변수가 된다. 4.0-32B는 세대까지 바뀌어 교란이 생긴다.
+sweep:gptq:ko:1:256
+sweep:gptq:en_instruct:1:256
+sweep:gptq:ko:2:256
+sweep:gptq:en_instruct:2:256
+sweep:gptq:ko:3:256
+sweep:gptq:en_instruct:3:256
+sweep:gptq:ko:4:256
+sweep:gptq:en_instruct:4:256
+sweep:gptq:ko:5:256
+sweep:gptq:en_instruct:5:256

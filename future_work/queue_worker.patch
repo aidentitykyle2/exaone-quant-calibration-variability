@@ -1,0 +1,21 @@
+--- queue_worker.sh
++++ queue_worker.sh
+@@ -8,6 +8,9 @@
+ # 사용법:
+ #   nohup bash queue_worker.sh <GPU번호> <작업파일> > logs_rescore/gpu<N>.txt 2>&1 & disown
+ #
++# 작업 실행 스크립트는 QUEUE_JOB_SCRIPT로 바꿀 수 있다(기본 seed_job.sh).
++#   QUEUE_JOB_SCRIPT=robust_job.sh nohup bash queue_worker.sh 0 jobs_robust.txt ...
++#
+ # 선점 기록은 queue_claims/<작업파일명>/ 에 남는다. 같은 작업을 다시 돌리려면
+ # 해당 선점 디렉터리를 지우면 된다.
+ 
+@@ -33,7 +36,7 @@
+   key="$(echo "${job}" | tr ':/' '__')"
+   if mkdir "${CLAIM_DIR}/${key}" 2>/dev/null; then
+     echo "######## GPU ${GPU}: ${job} 시작 ########"; date
+-    CUDA_VISIBLE_DEVICES="${GPU}" bash seed_job.sh "${job}"
++    CUDA_VISIBLE_DEVICES="${GPU}" bash "${QUEUE_JOB_SCRIPT:-seed_job.sh}" "${job}"
+     rc=$?
+     echo "${rc}" > "${CLAIM_DIR}/${key}/exit_code"
+     echo "######## GPU ${GPU}: ${job} 종료 (exit=${rc}) ########"; date

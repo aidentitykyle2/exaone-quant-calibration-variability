@@ -1,0 +1,21 @@
+# e32_jobs.txt — EXAONE 4.0-32B 검증 실험
+#
+# 목적: 7.8B에서 얻은 결론(표본 변동이 지배적, 지표별 검정력 차이)이
+#       규모가 커져도 유지되는지 확인한다. 새 가설 수립이 아니라 외부 타당도 검증이다.
+#
+# 설계
+#   GPTQ만      : AWQ·QuaRot은 Post-LN 구조라 매핑 재도출이 필요하고 실패 위험이 있다.
+#                 핵심 주장은 GPTQ만으로 검증된다.
+#   ko/en_instruct : 도메인 고정 순수 언어 비교. C4는 언어·도메인이 섞여 쓰지 않는다.
+#   시드 3개    : 단일 시드 결과는 해석 불가능함이 7.8B에서 확인되었다.
+#   KMMLU·MMLU  : sweep 작업이 두 벤치마크만 평가한다(--log_samples 포함).
+#
+# 실행 전 필수: MODEL_ID / BASE / REVISION / GPU_UTIL 환경변수를 설정할 것(runbook 참조).
+# BF16 기준선은 별도로 먼저 실행한다.
+
+sweep:gptq:ko:1:256
+sweep:gptq:en_instruct:1:256
+sweep:gptq:ko:2:256
+sweep:gptq:en_instruct:2:256
+sweep:gptq:ko:3:256
+sweep:gptq:en_instruct:3:256

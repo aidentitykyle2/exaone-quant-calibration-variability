@@ -1,0 +1,83 @@
+# jobs_robust.txt — 강건 Hessian 집계 본 실험 (향후 연구용)
+#
+# 설계: 본 논문의 7.8B 시드 실험(18시드 x {ko, en_instruct}, n=256, GPTQ)과
+#       완전히 같은 조건에서 집계 방식만 geomedian(K=4)으로 바꾼다.
+#       총 캘리브레이션 표본 수는 256으로 동일하다 — 예산을 늘려서 나아진 것이
+#       아니라고 말하려면 이 조건이 반드시 고정되어야 한다.
+#
+# 판정: 이 36개 실행에서 얻은 X의 표준편차 SD(X)를 본 논문의 값과 비교한다.
+#       기준선 7.8B GPTQ: SD(X) = 2.00 %p, 18시드 중 5건 부호 반전.
+#       SD(X)가 유의하게 줄고 부호 반전이 사라지면 완화 가설 채택,
+#       줄지 않으면 '변동의 원인은 집계 방식이 아니다'라는 결과가 된다(둘 다 유용하다).
+#
+# 분석: final_analysis.py / single_run_risk.py 를 출력 이름
+#       gptq_robust_k4_geomedian_<lang>_s<seed> 로 그대로 돌릴 수 있다.
+#
+# 소요: 4 GPU 기준 약 20시간 (7.8B 시드 실험과 동일 규모).
+
+rlane:ko:1:4:geomedian
+rlane:en_instruct:1:4:geomedian
+rlane:ko:2:4:geomedian
+rlane:en_instruct:2:4:geomedian
+rlane:ko:3:4:geomedian
+rlane:en_instruct:3:4:geomedian
+rlane:ko:4:4:geomedian
+rlane:en_instruct:4:4:geomedian
+rlane:ko:5:4:geomedian
+rlane:en_instruct:5:4:geomedian
+rlane:ko:6:4:geomedian
+rlane:en_instruct:6:4:geomedian
+rlane:ko:7:4:geomedian
+rlane:en_instruct:7:4:geomedian
+rlane:ko:8:4:geomedian
+rlane:en_instruct:8:4:geomedian
+rlane:ko:9:4:geomedian
+rlane:en_instruct:9:4:geomedian
+rlane:ko:10:4:geomedian
+rlane:en_instruct:10:4:geomedian
+rlane:ko:11:4:geomedian
+rlane:en_instruct:11:4:geomedian
+rlane:ko:12:4:geomedian
+rlane:en_instruct:12:4:geomedian
+rlane:ko:13:4:geomedian
+rlane:en_instruct:13:4:geomedian
+rlane:ko:14:4:geomedian
+rlane:en_instruct:14:4:geomedian
+rlane:ko:15:4:geomedian
+rlane:en_instruct:15:4:geomedian
+rlane:ko:16:4:geomedian
+rlane:en_instruct:16:4:geomedian
+rlane:ko:17:4:geomedian
+rlane:en_instruct:17:4:geomedian
+rlane:ko:18:4:geomedian
+rlane:en_instruct:18:4:geomedian
+
+# --- 선택: 집계 방식 비교 (K=4 고정, 3시드만). geomedian이 최선인지 확인용.
+#     median은 PSD가 보장되지 않아 주 결과로 쓰지 않는다(robust_selftest.py T6).
+# rlane:ko:1:4:trimmed
+# rlane:ko:1:4:median
+# rlane:en_instruct:1:4:trimmed
+# rlane:en_instruct:1:4:median
+# rlane:ko:2:4:trimmed
+# rlane:ko:2:4:median
+# rlane:en_instruct:2:4:trimmed
+# rlane:en_instruct:2:4:median
+# rlane:ko:3:4:trimmed
+# rlane:ko:3:4:median
+# rlane:en_instruct:3:4:trimmed
+# rlane:en_instruct:3:4:median
+
+# --- 선택: K 민감도 (geomedian 고정, 3시드만). K가 크면 부분집합당 표본이 줄어
+#     부분집합 자체의 추정 오차가 커진다 — 절충점이 있는지 확인용.
+# rlane:ko:1:2:geomedian
+# rlane:ko:1:8:geomedian
+# rlane:en_instruct:1:2:geomedian
+# rlane:en_instruct:1:8:geomedian
+# rlane:ko:2:2:geomedian
+# rlane:ko:2:8:geomedian
+# rlane:en_instruct:2:2:geomedian
+# rlane:en_instruct:2:8:geomedian
+# rlane:ko:3:2:geomedian
+# rlane:ko:3:8:geomedian
+# rlane:en_instruct:3:2:geomedian
+# rlane:en_instruct:3:8:geomedian

@@ -1,0 +1,21 @@
+--- activation_analysis.py
++++ activation_analysis.py
+@@ -58,8 +58,16 @@
+ 
+ import torch
+ 
+-MODEL_ID = "LGAI-EXAONE/EXAONE-3.5-7.8B-Instruct"
+-REVISION = "0ff6b5ec7c13b049b253a16a889aa269e6b79a94"
++# 모델을 환경변수로 덮어쓸 수 있게 한다. ppl_eval.py가 이 두 값을 import해
++# BF16 기준 모델과 토크나이저를 정하므로, 하드코딩된 상태에서 32B를 측정하면
++# 양자화 체크포인트는 32B인데 BF16 기준만 7.8B가 되어 PPL 증가율이 무의미해진다.
++#   QUANT_MODEL_ID=LGAI-EXAONE/EXAONE-3.5-32B-Instruct \
++#   QUANT_REVISION=d6fa88cd8d2c9512b40578bdc44e64909e5a5042 python ppl_eval.py measure ...
++# QUANT_REVISION을 빈 문자열로 두면 리비전을 고정하지 않는다.
++MODEL_ID = os.environ.get("QUANT_MODEL_ID",
++                          "LGAI-EXAONE/EXAONE-3.5-7.8B-Instruct")
++REVISION = os.environ.get("QUANT_REVISION",
++                          "0ff6b5ec7c13b049b253a16a889aa269e6b79a94") or None
+ 
+ # 입력이 같은 선형층은 하나만 훅을 건다 (q/k/v 입력 동일, c_fc_0/c_fc_1 입력 동일).
+ HOOK_POINTS = {
