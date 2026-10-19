@@ -18,8 +18,8 @@ authors:
   - given-names: "Yuil"
     family-names: "Jung"
     alias: "정유일"
-    email: "교신저자이메일@주소"
-    affiliation: "남부직업개발원"
+    email: "neogeon@gmail.com"
+    affiliation: "남부직업능력개발원"
 keywords:
   - LLM quantization
   - calibration data
@@ -39,7 +39,7 @@ preferred-citation:
       affiliation: "한국기술교육대학교 대학원 AI융합교육학과"
     - given-names: "Yuil"
       family-names: "Jung"
-      affiliation: "남부직업개발원"
+      affiliation: "남부직업능력개발원"
   collection-title: "2026 한국정보기술학회 추계 종합학술대회 논문집"
   conference:
     name: "2026 한국정보기술학회 추계 종합학술대회"

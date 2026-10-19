@@ -6,18 +6,6 @@
 새로운 양자화 기법을 제안하지 않는다. 양자화 실험에서 **측정된 효과의 재현성과
 귀속 가능성**을 다룬다.
 
-> **업로드 전 1회 실행**
-> 저자 성명과 GitHub 계정명은 `@@이름@@` 자리표시자로 두었다. 아래 한 줄로
-> `AUTHORS`·`CITATION.cff`·`LICENSE`·`paper/LICENSE`·`README.md`가 함께 채워진다.
->
-> ```bash
-> bash tools/set_identity.sh --author1-ko "박○○" --given1 "Gildong" \
->   --author2-ko "정○○" --given2 "Gildong" \
->   --email2 "co.author@example.ac.kr" --github "myaccount"
-> ```
->
-> 그 밖의 점검 항목은 [`docs/SUBMISSION.md`](docs/SUBMISSION.md)에 있다.
-
 ---
 
 ## 요약
@@ -144,12 +132,13 @@ python src/make_figure1.py     --help                    # 그림 1
 
 $$D(c, B) = \frac{Acc_{BF16}(B) - Acc_{c}(B)}{Acc_{BF16}(B)} \times 100$$
 
-$$L_{KO} = D(\mathrm{en}, B_{KO}) - D(\mathrm{ko}, B_{KO}), \quad
-L_{EN} = D(\mathrm{en}, B_{EN}) - D(\mathrm{ko}, B_{EN}), \quad
-X = L_{KO} - L_{EN}$$
+$$\Delta_{KO} = D(\mathrm{en}, B_{KO}) - D(\mathrm{ko}, B_{KO}), \quad
+\Delta_{EN} = D(\mathrm{ko}, B_{EN}) - D(\mathrm{en}, B_{EN}), \quad
+X = \Delta_{KO} + \Delta_{EN}$$
 
-`c`는 캘리브레이션 언어, `B`는 평가 벤치마크다. 가설이 예측하는 방향은
-$L_{KO}>0$, $L_{EN}<0$, $X>0$이다.
+`c`는 캘리브레이션 언어, `B`는 평가 벤치마크다. 각 평가에서 그 언어가 아닌
+데이터로 맞춘 모델이 더 많이 떨어진 정도이며, 가설이 예측하는 방향은
+$\Delta_{KO}>0$, $\Delta_{EN}>0$, $X>0$이다.
 
 ## 향후 연구 코드
 
@@ -203,6 +192,3 @@ $L_{KO}>0$, $L_{EN}<0$, $X>0$이다.
 - 논문 본문과 그림(`paper/`): CC BY 4.0 — [`paper/LICENSE`](paper/LICENSE)
 - `data/calib_manifests/`는 원본 텍스트를 포함하지 않는다. KoAlpaca-v1.1a와
   Alpaca의 라이선스는 각 데이터셋 배포처를 따른다.
-#   e x a o n e - q u a n t - c a l i b r a t i o n - v a r i a b i l i t y  
- #   e x a o n e - q u a n t - c a l i b r a t i o n - v a r i a b i l i t y  
- 
