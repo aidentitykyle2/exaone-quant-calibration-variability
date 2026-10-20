@@ -1,0 +1,20 @@
+{
+  "calib_lang": "en_instruct",
+  "calib_n": 256,
+  "calib_seed": 7,
+  "count": 256,
+  "set_sha256": "7c39ce1f9d6d4f780210befe0c314c0642a5e258e20293551d47d405f4a2b141",
+  "selection_rule": "seed 0: 원본 순서 앞에서부터 / seed>0: datasets.shuffle(seed) 후 앞에서부터. n×2개를 먼저 고른 뒤 30자 초과 표본만 남기고 n개로 자른다. 혼합 조건은 구성 언어별로 n을 균등 분할한다.",
+  "sources": {
+    "en_instruct": {
+      "path": "tatsu-lab/alpaca",
+      "name": null,
+      "split": "train",
+      "num_rows": 52002,
+      "cache_file": "/data/kpark/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/alpaca-train.arrow"
+    }
+  },
+  "datasets_version": "4.6.0",
+  "text_included": false,
+  "origin": "reconstructed"
+}

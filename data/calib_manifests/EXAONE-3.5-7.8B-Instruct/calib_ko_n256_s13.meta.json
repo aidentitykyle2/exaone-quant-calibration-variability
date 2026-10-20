@@ -1,0 +1,20 @@
+{
+  "calib_lang": "ko",
+  "calib_n": 256,
+  "calib_seed": 13,
+  "count": 256,
+  "set_sha256": "b6164e6de23c4f2a8ba304893781d801dce200e250758bd46c0fccfa579d1c70",
+  "selection_rule": "seed 0: 원본 순서 앞에서부터 / seed>0: datasets.shuffle(seed) 후 앞에서부터. n×2개를 먼저 고른 뒤 30자 초과 표본만 남기고 n개로 자른다. 혼합 조건은 구성 언어별로 n을 균등 분할한다.",
+  "sources": {
+    "ko": {
+      "path": "beomi/KoAlpaca-v1.1a",
+      "name": null,
+      "split": "train",
+      "num_rows": 21155,
+      "cache_file": "/data/kpark/.cache/huggingface/datasets/beomi___ko_alpaca-v1.1a/default/0.0.0/03d3122c530b1e47195c08a3d851eeadddad9689/ko_alpaca-v1.1a-train.arrow"
+    }
+  },
+  "datasets_version": "4.6.0",
+  "text_included": false,
+  "origin": "runtime"
+}

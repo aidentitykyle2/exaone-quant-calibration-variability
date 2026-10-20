@@ -1,0 +1,41 @@
+{
+  "model": "EXAONE-3.5-32B-Instruct",
+  "lang": "ko",
+  "runs": [
+    "bf16",
+    "gptq_en_instruct_s1",
+    "gptq_en_instruct_s2",
+    "gptq_en_instruct_s3",
+    "gptq_en_instruct_s4",
+    "gptq_en_instruct_s5",
+    "gptq_en_instruct_s6",
+    "gptq_ko_s1",
+    "gptq_ko_s2",
+    "gptq_ko_s3",
+    "gptq_ko_s4",
+    "gptq_ko_s5",
+    "gptq_ko_s6"
+  ],
+  "tasks": {
+    "kmmlu": {
+      "n_items": 35030,
+      "order_sha256": "46bee8e1988c7a1d55a788e01ddbf673f21b9d2be726f347b5756cdbc4694f34",
+      "runs": [
+        "bf16",
+        "gptq_en_instruct_s1",
+        "gptq_en_instruct_s2",
+        "gptq_en_instruct_s3",
+        "gptq_en_instruct_s4",
+        "gptq_en_instruct_s5",
+        "gptq_en_instruct_s6",
+        "gptq_ko_s1",
+        "gptq_ko_s2",
+        "gptq_ko_s3",
+        "gptq_ko_s4",
+        "gptq_ko_s5",
+        "gptq_ko_s6"
+      ],
+      "scoring": "loglikelihood(first, hit/ntied)"
+    }
+  }
+}
